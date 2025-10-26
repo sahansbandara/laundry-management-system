@@ -1,4 +1,4 @@
-import { api, toastError, toastSuccess } from "./common.js";
+import { post, toastError, toastSuccess } from "./common.js";
 
 const form = document.getElementById("register-form");
 const inputs = {
@@ -64,7 +64,7 @@ form?.addEventListener("submit", async (event) => {
     };
 
     try {
-        await api.post("/api/auth/register", payload);
+        await post("/auth/register", payload);
         toastSuccess("Registration successful! Please login.");
         setTimeout(() => {
             window.location.href = "/frontend/login.html";

@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = '/api';
 const STORAGE_KEY = 'user';
 
 const toastContainer = document.createElement('div');
@@ -39,7 +39,8 @@ async function apiFetch(path, options = {}) {
     const mergedHeaders = { ...headers, ...authHeaders };
     const response = await fetch(`${API_BASE}${path}`, {
         ...options,
-        headers: mergedHeaders
+        headers: mergedHeaders,
+        credentials: 'include'
     });
     if (!response.ok) {
         let errorMessage = 'Request failed';

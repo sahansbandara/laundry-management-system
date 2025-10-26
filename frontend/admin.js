@@ -1,5 +1,8 @@
 import {
-    api,
+    get,
+    post,
+    patch,
+    del,
     requireAuth,
     toastError,
     toastSuccess,
@@ -214,7 +217,7 @@ orderForm?.addEventListener("submit", async (event) => {
     };
 
     try {
-        await api.post("/api/orders", payload);
+        await post("/orders", payload);
         toastSuccess("Order created successfully");
         closeModal(orderModal);
         await loadOrders();
@@ -245,7 +248,7 @@ taskForm?.addEventListener("submit", async (event) => {
     };
 
     try {
-        await api.post("/api/tasks", payload);
+        await post("/tasks", payload);
         toastSuccess("Task created successfully");
         closeModal(taskModal);
         await loadTasks();
@@ -256,7 +259,7 @@ taskForm?.addEventListener("submit", async (event) => {
 
 async function populateCustomerOptions() {
     try {
-        const data = await api.get("/api/admin/users");
+        const data = await get("/admin/users");
         users = data;
         const customerOptions = data.filter((user) => user.role === "USER");
         orderCustomer.innerHTML = `<option value="">Select customer</option>` +
@@ -271,7 +274,7 @@ async function populateCustomerOptions() {
 
 async function loadOrders() {
     try {
-        orders = await api.get("/api/orders");
+        orders = await get("/orders");
         renderOrders();
         updateKpis();
     } catch (error) {
@@ -332,7 +335,7 @@ ordersBody?.addEventListener("click", async (event) => {
         const status = select?.value;
         if (!status) return;
         try {
-            await api.patch(`/api/orders/${orderId}/status?value=${status}`);
+            await patch(`/orders/${orderId}/status?value=${status}`);
             toastSuccess("Order status updated");
             await loadOrders();
         } catch (error) {
@@ -343,7 +346,7 @@ ordersBody?.addEventListener("click", async (event) => {
     if (target.dataset.delete) {
         if (!confirmAction("Delete this order?")) return;
         try {
-            await api.del(`/api/orders/${orderId}`);
+            await del(`/orders/${orderId}`);
             toastSuccess("Order deleted");
             await loadOrders();
         } catch (error) {
@@ -358,7 +361,7 @@ filterCustomer?.addEventListener("change", renderOrders);
 
 async function loadTasks() {
     try {
-        tasks = await api.get("/api/tasks");
+        tasks = await get("/tasks");
         renderTasks();
         updateKpis();
     } catch (error) {
@@ -410,7 +413,7 @@ taskLanes?.addEventListener("click", async (event) => {
 
     if (target.dataset.task && target.dataset.target) {
         try {
-            await api.patch(`/api/tasks/${target.dataset.task}/status?value=${target.dataset.target}`);
+            await patch(`/tasks/${target.dataset.task}/status?value=${target.dataset.target}`);
             toastSuccess("Task status updated");
             await loadTasks();
         } catch (error) {
@@ -421,7 +424,7 @@ taskLanes?.addEventListener("click", async (event) => {
     if (target.dataset.removeTask) {
         if (!confirmAction("Delete this task?")) return;
         try {
-            await api.del(`/api/tasks/${target.dataset.removeTask}`);
+            await del(`/tasks/${target.dataset.removeTask}`);
             toastSuccess("Task deleted");
             await loadTasks();
         } catch (error) {
@@ -432,7 +435,7 @@ taskLanes?.addEventListener("click", async (event) => {
 
 async function loadPayments() {
     try {
-        payments = await api.get("/api/payments");
+        payments = await get("/payments");
         renderPayments();
         updateKpis();
     } catch (error) {
@@ -465,7 +468,7 @@ paymentsBody?.addEventListener("click", async (event) => {
 
     if (target.dataset.completePayment) {
         try {
-            await api.patch(`/api/payments/${target.dataset.completePayment}/status?value=COMPLETED`);
+            await patch(`/payments/${target.dataset.completePayment}/status?value=COMPLETED`);
             toastSuccess("Payment marked as completed");
             await loadPayments();
         } catch (error) {
@@ -476,7 +479,7 @@ paymentsBody?.addEventListener("click", async (event) => {
     if (target.dataset.removePayment) {
         if (!confirmAction("Delete this payment?")) return;
         try {
-            await api.del(`/api/payments/${target.dataset.removePayment}`);
+            await del(`/payments/${target.dataset.removePayment}`);
             toastSuccess("Payment deleted");
             await loadPayments();
         } catch (error) {
@@ -487,7 +490,7 @@ paymentsBody?.addEventListener("click", async (event) => {
 
 async function loadUsers() {
     try {
-        users = await api.get("/api/admin/users");
+        users = await get("/admin/users");
         renderUsers();
         await populateCustomerOptions();
         renderMessageUsers();
@@ -517,7 +520,7 @@ usersBody?.addEventListener("click", async (event) => {
 
     if (target.dataset.makeAdmin) {
         try {
-            await api.patch(`/api/admin/users/${target.dataset.makeAdmin}/role?value=ADMIN`);
+            await patch(`/admin/users/${target.dataset.makeAdmin}/role?value=ADMIN`);
             toastSuccess("User promoted to admin");
             await loadUsers();
         } catch (error) {
@@ -528,7 +531,7 @@ usersBody?.addEventListener("click", async (event) => {
     if (target.dataset.removeUser) {
         if (!confirmAction("Delete this user?")) return;
         try {
-            await api.del(`/api/admin/users/${target.dataset.removeUser}`);
+            await del(`/admin/users/${target.dataset.removeUser}`);
             toastSuccess("User deleted");
             await loadUsers();
         } catch (error) {
@@ -592,7 +595,7 @@ async function loadMessages() {
         return;
     }
     try {
-        const conversation = await api.get(`/api/messages?withUserId=${selectedMessageUser}&currentUserId=${admin.id}`);
+        const conversation = await get(`/messages?withUserId=${selectedMessageUser}&currentUserId=${admin.id}`);
         renderMessages(conversation);
     } catch (error) {
         toastError(error.message);
@@ -627,7 +630,7 @@ messageForm?.addEventListener("submit", async (event) => {
         return;
     }
     try {
-        await api.post("/api/messages", {
+        await post("/messages", {
             fromUserId: admin.id,
             toUserId: selectedMessageUser,
             body,
@@ -641,7 +644,7 @@ messageForm?.addEventListener("submit", async (event) => {
 
 async function initialiseFilters() {
     try {
-        const services = await api.get("/api/catalog/services");
+        const services = await get("/catalog/services");
         filterService.innerHTML = `<option value="">All services</option>` +
             services.map((service) => `<option value="${service}">${service}</option>`).join("");
     } catch (error) {

@@ -1,5 +1,6 @@
-// Backend base URL
-const API = "http://localhost:8080";
+import { api, get as apiGet, post as apiPost, put as apiPut, patch as apiPatch, del as apiDelete } from "./js/apiClient.js";
+import { http } from "./js/http.js";
+
 const toastContainerId = "toast-container";
 const AUTH_STORAGE_KEY = "smartfold_auth";
 
@@ -55,32 +56,36 @@ export function requireAuthOrRedirect() {
     return auth;
 }
 
-/* ---------- Fetch helpers ---------- */
-async function handleResponse(response) {
-    const text = await response.text();
-    const data = text ? JSON.parse(text) : null;
-    if (!response.ok) {
-        const msg = data?.error || data?.message || "Something went wrong";
-        throw new Error(msg);
-    }
-    return data;
-}
-async function request(url, options = {}) {
+/* ---------- Helpers built on API client ---------- */
+const withAuthHeaders = (headers = {}) => {
     const auth = getAuth();
-    const headers = {
-        "Content-Type": "application/json",
-        ...options.headers,
-    };
-    if (auth?.token) headers.Authorization = `Bearer ${auth.token}`;
-    const res = await fetch(url, { ...options, headers });
-    return handleResponse(res);
-}
-export const api = {
-    get: (p) => request(`${API}${p}`, { method: "GET" }),
-    post: (p, b) => request(`${API}${p}`, { method: "POST", body: JSON.stringify(b) }),
-    patch: (p, b) =>
-        request(`${API}${p}`, { method: "PATCH", body: b ? JSON.stringify(b) : undefined }),
-    del: (p) => request(`${API}${p}`, { method: "DELETE" }),
+    if (auth?.token) {
+        return { ...headers, Authorization: `Bearer ${auth.token}` };
+    }
+    return headers;
+};
+
+const withAuthConfig = (config = {}) => ({
+    ...config,
+    headers: withAuthHeaders(config.headers || {}),
+});
+
+export const get = (url, config = {}) => apiGet(url, withAuthConfig(config));
+export const post = (url, data, config = {}) => apiPost(url, data, withAuthConfig(config));
+export const put = (url, data, config = {}) => apiPut(url, data, withAuthConfig(config));
+export const patch = (url, data, config = {}) => apiPatch(url, data, withAuthConfig(config));
+export const del = (url, config = {}) => apiDelete(url, withAuthConfig(config));
+
+export { api, http };
+
+export const request = async (url, options = {}) => {
+    const { method = "GET", data, ...config } = options;
+    const verb = method.toUpperCase();
+    if (verb === "GET") return get(url, config);
+    if (verb === "DELETE") return del(url, config);
+    if (verb === "PUT") return put(url, data, config);
+    if (verb === "PATCH") return patch(url, data, config);
+    return post(url, data, config);
 };
 
 /* ---------- Auth utils ---------- */
@@ -109,7 +114,7 @@ export function requireAuth(role) {
 export async function loadServiceOptions(selectEl) {
     if (!selectEl) return;
     try {
-        const services = await api.get("/api/catalog/services");
+        const services = await get("/catalog/services");
         selectEl.innerHTML =
             `<option value="">Select service</option>` +
             services.map((s) => `<option value="${s}">${s}</option>`).join("");
@@ -120,7 +125,7 @@ export async function loadServiceOptions(selectEl) {
 export async function loadUnitOptions(selectEl) {
     if (!selectEl) return;
     try {
-        const units = await api.get("/api/catalog/units");
+        const units = await get("/catalog/units");
         selectEl.innerHTML =
             `<option value="">Select unit</option>` +
             units.map((u) => `<option value="${u}">${u}</option>`).join("");
