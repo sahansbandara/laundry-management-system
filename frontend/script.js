@@ -1,4 +1,39 @@
-const API_BASE = '/api';
+const API_BASE = (() => {
+    const DEFAULT_API_ORIGIN = 'http://localhost:8080';
+    const DEFAULT_API_PATH = '/api';
+    if (typeof window === 'undefined') {
+        return `${DEFAULT_API_ORIGIN}${DEFAULT_API_PATH}`;
+    }
+
+    const sanitize = (value = '') => value.replace(/\/$/, '');
+
+    const globalBase =
+        (typeof window !== 'undefined' &&
+            (window.__SMARTFOLD_API_BASE__ || window.API_BASE_URL || window.API_BASE)) ||
+        null;
+    if (globalBase) {
+        return sanitize(globalBase);
+    }
+
+    const metaBase = document?.querySelector?.('meta[name="smartfold-api-base"]')?.content;
+    if (metaBase) {
+        return sanitize(metaBase.trim());
+    }
+
+    const { origin, protocol, host, hostname, port } = window.location;
+    const isLocalhost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname);
+    if (isLocalhost && port && port !== '8080') {
+        return `${DEFAULT_API_ORIGIN}${DEFAULT_API_PATH}`;
+    }
+
+    if (origin && origin !== 'null') {
+        return `${sanitize(origin)}${DEFAULT_API_PATH}`;
+    }
+    if (protocol && protocol.startsWith('http') && host) {
+        return `${protocol}//${sanitize(host)}${DEFAULT_API_PATH}`;
+    }
+    return `${DEFAULT_API_ORIGIN}${DEFAULT_API_PATH}`;
+})();
 const STORAGE_KEY = 'user';
 
 const toastContainer = document.createElement('div');
