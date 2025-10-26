@@ -1,4 +1,18 @@
-const API_BASE = '/api';
+const API_BASE = (() => {
+    const DEFAULT_API_ORIGIN = 'http://localhost:8080';
+    if (typeof window === 'undefined') {
+        return `${DEFAULT_API_ORIGIN}/api`;
+    }
+
+    const { origin, protocol, host } = window.location;
+    if (origin && origin !== 'null') {
+        return `${origin.replace(/\/$/, '')}/api`;
+    }
+    if (protocol && protocol.startsWith('http') && host) {
+        return `${protocol}//${host.replace(/\/$/, '')}/api`;
+    }
+    return `${DEFAULT_API_ORIGIN}/api`;
+})();
 const STORAGE_KEY = 'user';
 
 const toastContainer = document.createElement('div');
