@@ -1,5 +1,5 @@
 const API_BASE = (() => {
-    const DEFAULT_API_ORIGIN = 'http://localhost:8080';
+    const DEFAULT_API_ORIGIN = 'http://localhost:42876';
     if (typeof window === 'undefined') {
         return `${DEFAULT_API_ORIGIN}/api`;
     }

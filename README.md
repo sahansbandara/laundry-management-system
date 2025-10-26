@@ -7,7 +7,7 @@
 2. Open `frontend/login.html`
 
 ## Database
-- Go to `http://localhost:8080/h2-console`
+- Go to `http://localhost:42876/h2-console`
 - JDBC URL: `jdbc:h2:mem:lms`  |  User: `sa`  |  Password: *(blank)*
 
 ## Demo credentials
