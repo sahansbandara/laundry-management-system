@@ -1,5 +1,6 @@
 import {
-    api,
+    get,
+    post,
     requireAuth,
     toastError,
     toastSuccess,
@@ -153,7 +154,7 @@ async function mountPlaceOrderUI() {
    ================= */
 async function fetchOrders() {
     try {
-        const data = await api.get(`/api/orders?userId=${user.id}`);
+        const data = await get(`/orders?userId=${user.id}`);
         ordersAll = Array.isArray(data) ? data : [];
     } catch (err) {
         // Demo-friendly fallback
@@ -324,7 +325,7 @@ function computeKPIs() {
    ================= */
 async function findAdmin() {
     try {
-        const list = await api.get("/api/admin/users");
+        const list = await get("/admin/users");
         adminUser = (list || []).find(u => u.role === "ADMIN") || null;
     } catch {
         // fake admin fallback
@@ -339,7 +340,7 @@ async function loadMessages() {
         return;
     }
     try {
-        const msgs = await api.get(`/api/messages?withUserId=${adminUser.id}&currentUserId=${user.id}`);
+        const msgs = await get(`/messages?withUserId=${adminUser.id}&currentUserId=${user.id}`);
         renderMessages(Array.isArray(msgs) ? msgs : []);
     } catch (err) {
         console.warn("Messages API failed, using demo:", err?.message);
@@ -390,7 +391,7 @@ messageForm?.addEventListener("submit", async (e) => {
         return;
     }
     try {
-        await api.post("/api/messages", {
+        await post("/messages", {
             fromUserId: user.id,
             toUserId: adminUser.id,
             body,

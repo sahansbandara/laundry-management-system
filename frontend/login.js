@@ -1,4 +1,4 @@
-import { api, setCurrentUser, toastError, toastSuccess } from "./common.js";
+import { post, setCurrentUser, toastError, toastSuccess } from "./common.js";
 
 const form = document.getElementById("login-form");
 const emailInput = document.getElementById("email");
@@ -41,7 +41,7 @@ form?.addEventListener("submit", async (e) => {
     };
 
     try {
-        const user = await api.post("/api/auth/login", payload);
+        const user = await post("/auth/login", payload);
         handleSuccess(user);
     } catch (error) {
         if (isNetworkError(error)) {
