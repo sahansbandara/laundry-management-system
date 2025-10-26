@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Place New Laundry Order</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="place-order-page">
+<header class="place-order-header">
+    <div class="container-xl">
+        <h1>Place New Laundry Order</h1>
+        <p class="muted">Select services and schedule pickup in just a few steps.</p>
+    </div>
+</header>
+<main class="place-order-main">
+    <div class="container-xl place-order-grid">
+        <section class="service-menu card-soft">
+            <header class="subhead">
+                <h2>Service Menu</h2>
+                <p class="muted small-text">Choose one or more services to build your order.</p>
+            </header>
+            <div class="service-grid">
+                <article class="service-card">
+                    <h3>Laundry (Wash Only)</h3>
+                    <p>Freshly laundered garments charged by total weight.</p>
+                    <div class="price">250 LKR / kg</div>
+                    <button class="primary-btn btn-primary service-select" data-service="laundry" aria-label="Select Laundry Wash Only">Select</button>
+                </article>
+                <article class="service-card">
+                    <h3>Pressing (Iron Only)</h3>
+                    <p>Perfect crease and finish for garments, priced per item category.</p>
+                    <div class="price">Per item (category-based)</div>
+                    <button class="primary-btn btn-primary service-select" data-service="pressing" aria-label="Select Pressing Iron Only">Select</button>
+                </article>
+                <article class="service-card">
+                    <h3>Wash &amp; Iron</h3>
+                    <p>Complete cleaning and pressing service for each garment type.</p>
+                    <div class="price">Per item (Pressing + 25 LKR)</div>
+                    <button class="primary-btn btn-primary service-select" data-service="washiron" aria-label="Select Wash and Iron">Select</button>
+                </article>
+                <article class="service-card">
+                    <h3>Dry Cleaning</h3>
+                    <p>Delicate solvent-based cleaning for special fabrics.</p>
+                    <div class="price">400 LKR / kg</div>
+                    <button class="primary-btn btn-primary service-select" data-service="dry" aria-label="Select Dry Cleaning">Select</button>
+                </article>
+                <article class="service-card">
+                    <h3>Express Service</h3>
+                    <p>Prioritized turnaround for your entire order.</p>
+                    <div class="price">+25% of selected services</div>
+                    <button class="primary-btn btn-primary service-select" data-service="express" aria-label="Toggle Express Add-on">Select</button>
+                </article>
+                <article class="service-card">
+                    <h3>Premium / Delicate Care</h3>
+                    <p>Hand-finished care for delicate and designer pieces.</p>
+                    <div class="price">400 LKR / item</div>
+                    <button class="primary-btn btn-primary service-select" data-service="premium" aria-label="Select Premium Delicate Care">Select</button>
+                </article>
+            </div>
+        </section>
+
+        <aside class="summary-panel card-soft" aria-label="Current Order Summary">
+            <header class="summary-header">
+                <div>
+                    <h2>Current Order Summary</h2>
+                    <p class="muted small-text">Track totals and schedule pickup</p>
+                </div>
+                <button type="button" id="repeatLastOrderBtn" class="pill-ghost repeat-pill">Repeat Last Order</button>
+            </header>
+
+            <div class="field-group">
+                <label for="pickupDateTime">Pickup Date &amp; Time</label>
+                <input type="datetime-local" id="pickupDateTime" />
+                <span class="error-message" id="pickupError"></span>
+            </div>
+            <div class="field-group">
+                <label for="deliveryDateTime">Delivery Date &amp; Time</label>
+                <input type="datetime-local" id="deliveryDateTime" />
+                <span class="error-message" id="deliveryError"></span>
+            </div>
+
+            <div class="summary-list-wrapper">
+                <div id="summaryList" aria-live="polite"></div>
+            </div>
+
+            <label class="addon-toggle" for="expressToggle">
+                <input type="checkbox" id="expressToggle" />
+                <span>Express Add-on (+25%)</span>
+            </label>
+            <label class="addon-toggle" for="premiumToggle">
+                <input type="checkbox" id="premiumToggle" />
+                <span>Premium Care (+LKR 400/item)</span>
+            </label>
+
+            <div class="totals">
+                <div class="total-line">
+                    <span class="label">Services Subtotal</span>
+                    <span class="value" id="subtotalValue">LKR 0</span>
+                </div>
+                <div class="total-line total-amount">
+                    <span class="label">TOTAL</span>
+                    <span class="value" id="totalValue">LKR 0</span>
+                </div>
+            </div>
+
+            <button id="placeOrderBtn" class="primary-btn btn-primary place-order-btn" disabled>Place Order</button>
+        </aside>
+    </div>
+</main>
+
+<div id="modalRoot" aria-live="assertive"></div>
+
+<script type="module" src="./place-order.js"></script>
+<script>
+    window.initPlaceOrder?.();
+</script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartFold — Admin Console</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="dashboard admin-dashboard">
+<header class="navbar app-bar">
+    <div class="container-xl app-bar-inner">
+        <div class="app-brand">
+            <h1 class="brand-heading">SmartFold</h1>
+        </div>
+        <div class="sidebar app-tabs">
+            <nav class="segmented-tabs" aria-label="Admin navigation">
+                <a href="#overview" class="tab-chip active">Overview</a>
+                <a href="#orders" class="tab-chip">Orders</a>
+                <a href="#services" class="tab-chip">Services</a>
+                <a href="#users" class="tab-chip">Users</a>
+                <a href="#contact-customers" class="tab-chip">Contact Customers</a>
+                <a href="#settings" class="tab-chip">Settings</a>
+            </nav>
+        </div>
+        <div class="app-actions">
+            <span id="admin-name" class="muted small-text"></span>
+            <button id="logout-btn" class="pill-ghost pill-logout">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main class="dashboard-main">
+    <div class="container-xl content-area admin-content">
+        <section id="overview" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Today at a glance</h2>
+                    <p class="muted small-text">Operations summary</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="kpi-row grid-4" id="kpi-cards">
+                    <article class="kpi-card">
+                        <span class="kpi-label">Today's Orders</span>
+                        <span class="kpi-value" id="kpi-orders">0</span>
+                    </article>
+                    <article class="kpi-card">
+                        <span class="kpi-label">Pending Tasks</span>
+                        <span class="kpi-value" id="kpi-tasks">0</span>
+                    </article>
+                    <article class="kpi-card">
+                        <span class="kpi-label">Revenue LKR (this week)</span>
+                        <span class="kpi-value" id="kpi-revenue">0</span>
+                    </article>
+                    <article class="kpi-card">
+                        <span class="kpi-label">Unpaid Invoices</span>
+                        <span class="kpi-value" id="kpi-unpaid">0</span>
+                    </article>
+                </div>
+                <div class="two-col gap-lg">
+                    <div class="card-soft timeline-card">
+                        <header class="subhead">
+                            <h3>Recent Activity</h3>
+                        </header>
+                        <ul class="timeline" id="recent-activity">
+                            <li class="timeline-item">
+                                <span class="timeline-time">09:24</span>
+                                <div>
+                                    <p class="timeline-title">Order #1046 marked READY</p>
+                                    <p class="muted small-text">Auto-sync</p>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <span class="timeline-time">08:51</span>
+                                <div>
+                                    <p class="timeline-title">Express pickup scheduled</p>
+                                    <p class="muted small-text">Customer: Silva Residence</p>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <span class="timeline-time">07:35</span>
+                                <div>
+                                    <p class="timeline-title">New user registered</p>
+                                    <p class="muted small-text">Invited to onboarding</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-soft capacity-card">
+                        <header class="subhead">
+                            <h3>Capacity Snapshot</h3>
+                        </header>
+                        <ul class="capacity-list">
+                            <li><span>Washers</span><span class="badge-info">70% utilized</span></li>
+                            <li><span>Dryers</span><span class="badge-ok">62% idle</span></li>
+                            <li><span>Pressing</span><span class="badge-warn">High load</span></li>
+                            <li><span>Delivery fleet</span><span class="badge-info">3 routes active</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="orders" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Orders</h2>
+                    <p class="muted small-text">Manage pipeline and assignments</p>
+                </div>
+                <div class="section-controls">
+                    <button id="open-order-modal" class="btn-primary btn-pill">New Order</button>
+                    <button class="pill-ghost">Export CSV</button>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="toolbar">
+                    <div class="field compact">
+                        <label class="sr-only" for="filter-customer">Filter by customer</label>
+                        <select id="filter-customer" class="select-lg"></select>
+                    </div>
+                    <div class="field compact">
+                        <label class="sr-only" for="filter-service">Filter by service</label>
+                        <select id="filter-service" class="select-lg"></select>
+                    </div>
+                    <div class="field compact">
+                        <label class="sr-only" for="filter-status">Filter by status</label>
+                        <select id="filter-status" class="select-lg"></select>
+                    </div>
+                </div>
+                <div class="table-wrapper table-compact">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Service</th>
+                            <th scope="col">Qty</th>
+                            <th scope="col">Price (LKR)</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="orders-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="tasks" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Task Board</h2>
+                    <p class="muted small-text">Track staff workload</p>
+                </div>
+                <div class="section-controls">
+                    <button id="open-task-modal" class="btn-primary btn-pill">New Task</button>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="kanban" id="task-lanes"></div>
+            </div>
+        </section>
+
+        <section id="payments" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Payments</h2>
+                    <p class="muted small-text">Monitor settlements</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="table-wrapper table-compact">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Order</th>
+                            <th scope="col">Amount (LKR)</th>
+                            <th scope="col">Method</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Paid At</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="payments-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Services</h2>
+                    <p class="muted small-text">Catalog overview</p>
+                </div>
+            </div>
+            <div class="section-body two-col gap-lg">
+                <div class="card-soft">
+                    <header class="subhead">
+                        <h3>Service List</h3>
+                    </header>
+                    <div class="table-wrapper table-compact">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Base Price</th>
+                                <th scope="col">Unit</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="services-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-soft sticky-card">
+                    <header class="subhead">
+                        <h3>Create / Edit Service</h3>
+                    </header>
+                    <form id="service-form" class="stack gap-md" novalidate>
+                        <label for="service-name">Service Name</label>
+                        <input id="service-name" type="text" placeholder="E.g. Wash &amp; Fold" required />
+                        <div class="helper-text" data-for="service-name"></div>
+
+                        <label for="service-price">Base Price (LKR)</label>
+                        <input id="service-price" type="number" min="0" step="50" required />
+                        <div class="helper-text" data-for="service-price"></div>
+
+                        <label for="service-unit">Unit</label>
+                        <input id="service-unit" type="text" placeholder="Per Kg / item" required />
+                        <div class="helper-text" data-for="service-unit"></div>
+
+                        <label for="service-description">Description</label>
+                        <textarea id="service-description" rows="3" placeholder="Short description"></textarea>
+                        <div class="helper-text" data-for="service-description"></div>
+
+                        <label class="toggle" for="service-active">
+                            <input type="checkbox" id="service-active" />
+                            <span>Active</span>
+                        </label>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save Service</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="users" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Users</h2>
+                    <p class="muted small-text">Manage customers and staff</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="toolbar">
+                    <div class="field compact">
+                        <input type="search" placeholder="Search users" aria-label="Search users" />
+                    </div>
+                    <div class="field compact">
+                        <select aria-label="Filter by role">
+                            <option>All roles</option>
+                            <option>Customer</option>
+                            <option>Staff</option>
+                            <option>Admin</option>
+                        </select>
+                    </div>
+                    <div class="field compact">
+                        <select aria-label="Filter by status">
+                            <option>Any status</option>
+                            <option>Active</option>
+                            <option>Invited</option>
+                            <option>Suspended</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrapper table-compact">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Orders</th>
+                            <th scope="col">Created</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="users-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact-customers" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Contact Customers</h2>
+                    <p class="muted small-text">Respond to ongoing conversations</p>
+                </div>
+            </div>
+            <div class="section-body messaging-layout">
+                <aside class="inbox" aria-label="Customer inbox">
+                    <header class="inbox-header">
+                        <h3>Inbox</h3>
+                    </header>
+                    <ul id="message-users" class="inbox-list"></ul>
+                </aside>
+                <div class="thread">
+                    <header class="thread-meta">
+                        <h3>Conversation</h3>
+                    </header>
+                    <div class="thread-scroll" id="message-list"></div>
+                    <form id="message-form" class="thread-input" aria-label="Reply to customer">
+                        <label class="sr-only" for="message-input">Reply</label>
+                        <input type="text" id="message-input" placeholder="Type a reply" required />
+                        <button type="submit" class="btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings" class="section-block card-soft">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Settings</h2>
+                    <p class="muted small-text">Configuration</p>
+                </div>
+            </div>
+            <div class="section-body grid-2 gap-lg">
+                <div class="card-soft">
+                    <header class="subhead">
+                        <h3>Organization</h3>
+                    </header>
+                    <form class="stack gap-md">
+                        <label for="org-name">Business name</label>
+                        <input id="org-name" type="text" placeholder="SmartFold Laundry" />
+                        <label for="org-phone">Contact number</label>
+                        <input id="org-phone" type="tel" placeholder="(+94) 77 123 4567" />
+                        <label for="org-address">Pickup hub</label>
+                        <textarea id="org-address" rows="3" placeholder="Main warehouse address"></textarea>
+                        <button type="button" class="btn-primary">Save changes</button>
+                    </form>
+                </div>
+                <div class="card-soft">
+                    <header class="subhead">
+                        <h3>Notifications</h3>
+                    </header>
+                    <form class="stack gap-md">
+                        <label class="toggle" for="notify-orders">
+                            <input type="checkbox" id="notify-orders" checked />
+                            <span>Email updates for new orders</span>
+                        </label>
+                        <label class="toggle" for="notify-capacity">
+                            <input type="checkbox" id="notify-capacity" />
+                            <span>Alert when capacity exceeds 80%</span>
+                        </label>
+                        <label class="toggle" for="notify-payments">
+                            <input type="checkbox" id="notify-payments" />
+                            <span>Daily settlement summary</span>
+                        </label>
+                        <button type="button" class="btn-primary">Update preferences</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<div class="modal" id="order-modal">
+    <div class="modal-content">
+        <h3>Create Order</h3>
+        <form id="order-form" novalidate class="stack gap-md">
+            <label for="order-customer">Customer</label>
+            <select id="order-customer" required></select>
+            <div class="helper-text" data-for="order-customer"></div>
+
+            <label for="order-service">Service</label>
+            <select id="order-service" required></select>
+            <div class="helper-text" data-for="order-service"></div>
+
+            <div class="form-row-2">
+                <div class="field">
+                    <label for="order-quantity">Quantity</label>
+                    <input type="number" id="order-quantity" min="1" step="0.1" required />
+                    <div class="helper-text" data-for="order-quantity"></div>
+                </div>
+                <div class="field">
+                    <label for="order-unit">Unit</label>
+                    <select id="order-unit" required></select>
+                    <div class="helper-text" data-for="order-unit"></div>
+                </div>
+            </div>
+
+            <label for="order-price">Price (LKR)</label>
+            <input type="number" id="order-price" min="0" step="50" required />
+            <div class="helper-text" data-for="order-price"></div>
+
+            <label for="order-status">Status</label>
+            <select id="order-status">
+                <option value="PENDING">PENDING</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="READY">READY</option>
+                <option value="DELIVERED">DELIVERED</option>
+                <option value="CANCELLED">CANCELLED</option>
+            </select>
+
+            <div class="form-row-2">
+                <div class="field">
+                    <label for="order-pickup">Pickup Date</label>
+                    <input type="date" id="order-pickup" />
+                </div>
+                <div class="field">
+                    <label for="order-delivery">Delivery Date</label>
+                    <input type="date" id="order-delivery" />
+                </div>
+            </div>
+
+            <label for="order-notes">Notes</label>
+            <textarea id="order-notes" placeholder="Any special handling instructions"></textarea>
+
+            <div class="modal-actions">
+                <button type="button" id="close-order-modal" class="pill-ghost">Cancel</button>
+                <button type="submit" class="btn-primary">Save Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="task-modal">
+    <div class="modal-content">
+        <h3>Create Task</h3>
+        <form id="task-form" novalidate class="stack gap-md">
+            <label for="task-title">Title</label>
+            <input type="text" id="task-title" required />
+            <div class="helper-text" data-for="task-title"></div>
+
+            <label for="task-assigned">Assigned To</label>
+            <input type="text" id="task-assigned" placeholder="Staff member" />
+
+            <label for="task-due">Due Date</label>
+            <input type="date" id="task-due" />
+
+            <label for="task-price">Price (LKR)</label>
+            <input type="number" id="task-price" min="0" step="50" required />
+            <div class="helper-text" data-for="task-price"></div>
+
+            <label for="task-status">Status</label>
+            <select id="task-status">
+                <option value="PENDING">PENDING</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELLED">CANCELLED</option>
+            </select>
+
+            <label for="task-notes">Notes</label>
+            <textarea id="task-notes" placeholder="Task notes"></textarea>
+
+            <div class="modal-actions">
+                <button type="button" id="close-task-modal" class="pill-ghost">Cancel</button>
+                <button type="submit" class="btn-primary">Save Task</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module" src="./admin.js"></script>
+</body>
+</html>

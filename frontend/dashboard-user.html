@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartFold — Customer Portal</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="dashboard user-dashboard">
+<header class="navbar app-bar">
+    <div class="container-xl app-bar-inner">
+        <div class="app-brand">
+            <h1 class="brand-heading">SmartFold</h1>
+        </div>
+        <nav class="segmented-tabs" aria-label="Customer quick navigation">
+            <a href="#place-order-hero" class="tab-chip active">Place Order</a>
+            <a href="#orders" class="tab-chip">My Orders</a>
+            <a href="#support" class="tab-chip">Contact Support</a>
+        </nav>
+        <div class="app-actions">
+            <button id="logout-user" class="pill-ghost pill-logout">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main class="dashboard-main">
+    <div class="container-xl content-area">
+        <section id="place-order-hero" class="hero-shell section-block">
+            <div id="placeOrderMount" class="place-order-embed" aria-label="Place New Laundry Order"></div>
+        </section>
+
+        <section id="kpiRow" class="kpi-row section-block">
+            <article class="kpi-card" role="status" aria-live="polite">
+                <span class="kpi-label">Active Orders</span>
+                <span class="kpi-value" id="kpiActive">0</span>
+            </article>
+            <article class="kpi-card">
+                <span class="kpi-label">Total Spent (LKR)</span>
+                <span class="kpi-value" id="kpiSpent">0</span>
+            </article>
+            <article class="kpi-card">
+                <span class="kpi-label">Last Pickup</span>
+                <span class="kpi-value" id="kpiPickup">—</span>
+            </article>
+        </section>
+
+        <section id="orders" class="section-block card-soft">
+            <div class="section-header">
+                <h2 class="section-title">My Orders</h2>
+                <div class="section-controls">
+                    <div class="field compact">
+                        <label class="sr-only" for="orderSearch">Search orders</label>
+                        <input id="orderSearch" type="search" class="input-lg" placeholder="Search orders…" />
+                    </div>
+                    <div class="field compact">
+                        <label class="sr-only" for="orderStatus">Filter by status</label>
+                        <select id="orderStatus" class="select-lg">
+                            <option value="ALL">All statuses</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="IN_PROGRESS">In progress</option>
+                            <option value="READY">Ready</option>
+                            <option value="DELIVERED">Delivered</option>
+                            <option value="CANCELLED">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="table-wrapper table-compact">
+                    <table aria-label="Orders table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Service</th>
+                            <th scope="col">Qty</th>
+                            <th scope="col">Price (LKR)</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Pickup</th>
+                            <th scope="col">Delivery</th>
+                            <th scope="col" class="row-actions">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="user-orders-body"></tbody>
+                    </table>
+                </div>
+                <div class="section-footer">
+                    <span class="muted small-text" id="pageInfo">Showing 0–0 of 0</span>
+                    <div class="pager">
+                        <button id="prevPage" class="btn-primary btn-pill" disabled>Prev</button>
+                        <button id="nextPage" class="btn-primary btn-pill" disabled>Next</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="support" class="section-block card-soft">
+            <div class="section-header">
+                <h2 class="section-title">Contact Support</h2>
+            </div>
+            <div class="section-body">
+                <div class="thread" aria-live="polite">
+                    <div class="thread-scroll" id="user-message-list"></div>
+                    <form id="user-message-form" class="thread-input" aria-label="Contact Support form">
+                        <label class="sr-only" for="user-message-input">Message to Support</label>
+                        <input type="text" id="user-message-input" placeholder="Type your message to Support…" required />
+                        <button type="submit" class="btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script type="module" src="./user.js"></script>
+</body>
+</html>
